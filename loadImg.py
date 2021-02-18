@@ -1,6 +1,5 @@
-#Author: Thulek@gmail.com
-#Split an alignment into sub-alignments using a predefined partitioning scheme
- 
+#Author: Juverofan
+
 from os import listdir
 from os.path import isfile, join
 import os

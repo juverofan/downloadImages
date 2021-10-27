@@ -52,7 +52,8 @@ else:
 	for imgtag in soup.find_all('img'):
 		if imgtag['src'] not in imglink:
 			imglink.append(imgtag['src'])
-	for imgtag in soup.find_all('a'):
+	for imgtag in soup.find_all('a',href=True):
+		#print(imgtag)
 		if imgtag['href'] not in imglink and imgtag['href'].split(".")[len(imgtag['href'].split("."))-1].upper() in ["PNG","JPG","GIF","JPEG","BMP"]:
 			imglink.append(imgtag['href'])
 

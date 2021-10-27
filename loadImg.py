@@ -11,6 +11,8 @@ import time
 from bs4 import BeautifulSoup as BS
 import array as arr
 import random
+import base64
+import string
 
 import argparse
 parser = argparse.ArgumentParser() 
@@ -43,7 +45,7 @@ else:
 	print("Domain: " + domain+"\n")
 	print("Path: "+path)
 	r = requests.get(url)
-	soup = BS(r.text)
+	soup = BS(r.text, "html.parser")
 	imglink = []
 	for imgtag in soup.find_all('img'):
 		if imgtag['src'] not in imglink:
@@ -53,9 +55,40 @@ else:
 			imglink.append(imgtag['href'])
 
 	#print(imglink)
+	
 	for img in imglink:
 		print("Getting file: "+img)
-		if(img.startswith("/")):
+		wl = 0
+		if(img.split(".")[len(img.split("."))-1].upper() not in ["PNG","JPG","GIF","JPEG","BMP"]):
+			wl = 1
+			print("Modifying the link to: ")
+			if(img.split(".")[len(img.split("."))-1].upper().startswith(("PNG","JPG","GIF","JPEG","BMP")) ):
+				ext = "JPG"
+				if img.split(".")[len(img.split("."))-1].upper().startswith("PNG"):
+					ext = "PNG"
+				elif img.split(".")[len(img.split("."))-1].upper().startswith("JPG"):
+					ext = "JPG"
+				elif img.split(".")[len(img.split("."))-1].upper().startswith("GIF"):
+					ext = "GIF"
+				elif img.split(".")[len(img.split("."))-1].upper().startswith("JPEG"):
+					ext = "JPEG"
+				elif img.split(".")[len(img.split("."))-1].upper().startswith("BMG"):
+					ext = "BMP"
+				img = img.replace(img.split(".")[len(img.split("."))-1],"")
+				img = img + ext
+				print(img)
+				wl = 0
+
+		if "base64," in img:
+			imgdata = base64.b64decode(img.split("base64,")[1])
+			letters = string.ascii_lowercase
+			filename = output+"/"+''.join(random.choice(letters) for i in range(10))+".jpg"
+			#filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
+			with open(filename, 'wb') as f:
+				f.write(imgdata)
+		elif wl == 1:
+			print("cannot download file")
+		elif(img.startswith("/")):
 			filename = img.split("/")[len(img.split("/"))-1]
 			r = requests.get(domain.strip("/")+img, allow_redirects=True)
 			open(output+"/"+filename, 'wb').write(r.content)
@@ -67,5 +100,3 @@ else:
 			filename = img.split("/")[len(img.split("/"))-1]
 			r = requests.get(path.strip("/")+"/"+img, allow_redirects=True)
 			open(output+"/"+filename, 'wb').write(r.content)
-		#print(imgtag['src'])
-	#print(r.text)

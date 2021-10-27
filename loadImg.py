@@ -31,6 +31,8 @@ if(not os.path.isdir(output)):
 
 
 url = args.url 
+if url.count("/") == 2:
+	url = url + "/"
 if not url.lower().startswith("http"):
 	print("URL not correct.")
 else:
@@ -61,9 +63,9 @@ else:
 		wl = 0
 		if(img.split(".")[len(img.split("."))-1].upper() not in ["PNG","JPG","GIF","JPEG","BMP"]):
 			wl = 1
-			print("Modifying the link to: ")
 			if(img.split(".")[len(img.split("."))-1].upper().startswith(("PNG","JPG","GIF","JPEG","BMP")) ):
 				ext = "JPG"
+				print("Modifying the link to: ")
 				if img.split(".")[len(img.split("."))-1].upper().startswith("PNG"):
 					ext = "PNG"
 				elif img.split(".")[len(img.split("."))-1].upper().startswith("JPG"):
@@ -83,6 +85,7 @@ else:
 			imgdata = base64.b64decode(img.split("base64,")[1])
 			letters = string.ascii_lowercase
 			filename = output+"/"+''.join(random.choice(letters) for i in range(10))+".jpg"
+			print("base64 image save to "+filename)
 			#filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
 			with open(filename, 'wb') as f:
 				f.write(imgdata)
